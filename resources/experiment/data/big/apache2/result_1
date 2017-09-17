@@ -13,31 +13,31 @@ Document Path:          /big.html
 Document Length:        20480 bytes
 
 Concurrency Level:      10000
-Time taken for tests:   127.269 seconds
+Time taken for tests:   127.361 seconds
 Complete requests:      20000
-Failed requests:        2163
-   (Connect: 0, Receive: 721, Length: 721, Exceptions: 721)
-Total transferred:      414623412 bytes
-HTML transferred:       409149440 bytes
-Requests per second:    157.15 [#/sec] (mean)
-Time per request:       63634.581 [ms] (mean)
-Time per request:       6.363 [ms] (mean, across all concurrent requests)
-Transfer rate:          3181.49 [Kbytes/sec] received
+Failed requests:        3162
+   (Connect: 0, Receive: 1054, Length: 1054, Exceptions: 1054)
+Total transferred:      414976230 bytes
+HTML transferred:       409497600 bytes
+Requests per second:    157.03 [#/sec] (mean)
+Time per request:       63680.438 [ms] (mean)
+Time per request:       6.368 [ms] (mean, across all concurrent requests)
+Transfer rate:          3181.91 [Kbytes/sec] received
 
 Connection Times (ms)
               min  mean[+/-sd] median   max
-Connect:        0 1505 6850.0      6   63250
-Processing:     1  279 4227.9     83  127246
-Waiting:        0   57  89.4     37    8074
-Total:          1 1784 8038.8    109  127246
+Connect:        0  905 3460.3     11   31111
+Processing:     1  127 2022.8     36  127348
+Waiting:        0   33  93.3     15    4144
+Total:          1 1033 4006.9     60  127348
 
 Percentage of the requests served within a certain time (ms)
-  50%    109
-  66%    231
-  75%    333
-  80%    405
-  90%   2010
-  95%   7126
-  98%  31103
-  99%  31388
- 100%  127246 (longest request)
+  50%     60
+  66%    151
+  75%    306
+  80%    672
+  90%   3014
+  95%   3391
+  98%  15042
+  99%  15248
+ 100%  127348 (longest request)

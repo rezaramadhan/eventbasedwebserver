@@ -3,4 +3,41 @@ Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
 Licensed to The Apache Software Foundation, http://www.apache.org/
 
 Benchmarking 10.130.34.183 (be patient)
-Total of 19999 requests completed
+
+
+Server Software:        Apache/2.4.18
+Server Hostname:        10.130.34.183
+Server Port:            80
+
+Document Path:          /small.html
+Document Length:        500 bytes
+
+Concurrency Level:      10000
+Time taken for tests:   99.132 seconds
+Complete requests:      20000
+Failed requests:        399
+   (Connect: 0, Receive: 133, Length: 133, Exceptions: 133)
+Total transferred:      15317457 bytes
+HTML transferred:       9933500 bytes
+Requests per second:    201.75 [#/sec] (mean)
+Time per request:       49565.954 [ms] (mean)
+Time per request:       4.957 [ms] (mean, across all concurrent requests)
+Transfer rate:          150.89 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0 2522 11704.1     14   63204
+Processing:     0 2526 11002.8     21   98031
+Waiting:        0 1871 7746.6     17   48490
+Total:          1 5048 15701.0     38   98210
+
+Percentage of the requests served within a certain time (ms)
+  50%     38
+  66%     58
+  75%    100
+  80%   1038
+  90%  11389
+  95%  48597
+  98%  63196
+  99%  63228
+ 100%  98210 (longest request)
