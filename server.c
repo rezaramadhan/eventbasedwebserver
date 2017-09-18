@@ -94,6 +94,17 @@ int create_and_bind (char *port) {
     return sockfd;
 }
 
+char* find_request_path(char* buff) {
+/*  Get HTTP Request path from a HTTP Request file.
+    TODO: handle if path contains webserver name.
+*/
+    char* path_begin = strchr(buff, '/');
+    char* path_end = strchr(path_begin, ' ');
+    *path_end = 0;
+
+    return path_begin;
+}
+
 void handle_new_connection(int sockfd, int epollfd) {
 /* We have a notification on the listening socket, which
    means one or more incoming connections. */
@@ -145,15 +156,76 @@ void handle_new_connection(int sockfd, int epollfd) {
     }
 }
 
-char* find_request_path(char* buff) {
-/*  Get HTTP Request path from a HTTP Request file.
-    TODO: handle if path contains webserver name.
-*/
-    char* path_begin = strchr(buff, '/');
-    char* path_end = strchr(path_begin, ' ');
-    *path_end = 0;
+void handle_http_request(struct epoll_event *events, int i) {
+    /* We have data on the fd waiting to be read. Read and
+     display it. We must read whatever data is available
+     completely, as we are running in edge-triggered mode
+     and won't get a notification again for the same
+     data. */
+    int done = 0;
+    int s;
+    while (1) {
+        ssize_t count;
+        char buf[512];
+        memset(buf, 0, 512);
+        printf("incoming data\n");
+        count = read (events[i].data.fd, buf, sizeof buf);
+        if (count == -1) {
+          /* If errno == EAGAIN, that means we have read all
+             data. So go back to the main loop. */
+            if (errno != EAGAIN) {
+                perror ("read");
+                done = 1;
+            }
+            break;
+        } else if (count == 0) {
+          /* End of file. The remote has closed the
+             connection. */
+            done = 1;
+            break;
+        }
 
-    return path_begin;
+        /* Write the buffer to standard output */
+        printf("'%s'\n", buf);
+        char sendbuff[768];
+        strcpy(sendbuff, RESPONSE_HEADER);
+        strcat(sendbuff, buf);
+        char* path = find_request_path(buf);
+        // printf("'%s'\n", path);
+
+        FILE* fp;
+        char buff[512];
+        char filepath[512];
+        strcpy(filepath, INDEX_DIR);
+        printf("Filename: %s\n", filepath);
+        strcat(filepath, path);
+        printf("Filename: %s\n", filepath);
+        fp = fopen(filepath, "r"); // read mode
+
+        if( fp == NULL ) {
+            perror("Error 404.\n Requested file not found.\n");
+            exit(EXIT_FAILURE);
+        }
+        s = write(events[i].data.fd, RESPONSE_HEADER, strlen(RESPONSE_HEADER));
+        while( fgets ( buff, 512, fp ) != NULL )
+             s = write(events[i].data.fd, buff, strlen(buff)) ;
+
+        close(events[i].data.fd);
+        break;
+        if (s == -1) {
+           perror ("write");
+           abort ();
+        }
+    }
+
+    if (done) {
+          printf ("Closed connection on descriptor %d\n",
+                  events[i].data.fd);
+
+          /* Closing the descriptor will make epoll remove it
+             from the set of descriptors which are monitored. */
+          close (events[i].data.fd);
+    }
 }
 
 int main (int argc, char *argv[]) {
@@ -213,77 +285,9 @@ int main (int argc, char *argv[]) {
                 close (events[i].data.fd);
                 continue;
             } else if (sockfd == events[i].data.fd) {
-                 handle_new_connection(sockfd, epollfd);
+                handle_new_connection(sockfd, epollfd);
             } else {
-
-                /* We have data on the fd waiting to be read. Read and
-                 display it. We must read whatever data is available
-                 completely, as we are running in edge-triggered mode
-                 and won't get a notification again for the same
-                 data. */
-                int done = 0;
-                while (1) {
-                    ssize_t count;
-                    char buf[512];
-                    memset(buf, 0, 512);
-                    printf("incoming data\n");
-                    count = read (events[i].data.fd, buf, sizeof buf);
-                    if (count == -1) {
-                      /* If errno == EAGAIN, that means we have read all
-                         data. So go back to the main loop. */
-                        if (errno != EAGAIN) {
-                            perror ("read");
-                            done = 1;
-                        }
-                        break;
-                    } else if (count == 0) {
-                      /* End of file. The remote has closed the
-                         connection. */
-                        done = 1;
-                        break;
-                    }
-
-                    /* Write the buffer to standard output */
-                    printf("'%s'\n", buf);
-                    char sendbuff[768];
-                    strcpy(sendbuff, RESPONSE_HEADER);
-                    strcat(sendbuff, buf);
-                    char* path = find_request_path(buf);
-                    // printf("'%s'\n", path);
-
-                    FILE* fp;
-                    char buff[512];
-                    char filepath[512];
-                    strcpy(filepath, INDEX_DIR);
-                    printf("Filename: %s\n", filepath);
-                    strcat(filepath, path);
-                    printf("Filename: %s\n", filepath);
-                    fp = fopen(filepath, "r"); // read mode
-
-                    if( fp == NULL ) {
-                        perror("Error 404.\n Requested file not found.\n");
-                        exit(EXIT_FAILURE);
-                    }
-                    write(events[i].data.fd, RESPONSE_HEADER, strlen(RESPONSE_HEADER));
-                    while( fgets ( buff, 512, fp ) != NULL )
-                         write(events[i].data.fd, buff, strlen(buff)) ;
-
-                    close(events[i].data.fd);
-                    break;
-                    if (s == -1) {
-                       perror ("write");
-                       abort ();
-                    }
-                }
-
-                if (done) {
-                      printf ("Closed connection on descriptor %d\n",
-                              events[i].data.fd);
-
-                      /* Closing the descriptor will make epoll remove it
-                         from the set of descriptors which are monitored. */
-                      close (events[i].data.fd);
-                }
+                handle_http_request(events, i);
             }
         }
     }
