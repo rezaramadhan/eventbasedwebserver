@@ -9,7 +9,7 @@
 #include <sys/epoll.h>
 #include <errno.h>
 
-#define MAXEVENTS 64
+#define MAXEVENTS 15000
 
 char INDEX_DIR[512];
 char PORT[8];
@@ -163,7 +163,7 @@ int main (int argc, char *argv[]) {
     struct epoll_event *events;
 
     load_configuration("resources/server.conf");
-
+    printf("%s\n", INDEX_DIR);
     // sockfd = create_and_bind (PORT);
     sockfd = create_and_bind (argv[1]);
     if (sockfd == -1)
@@ -215,6 +215,7 @@ int main (int argc, char *argv[]) {
             } else if (sockfd == events[i].data.fd) {
                  handle_new_connection(sockfd, epollfd);
             } else {
+
                 /* We have data on the fd waiting to be read. Read and
                  display it. We must read whatever data is available
                  completely, as we are running in edge-triggered mode
@@ -247,9 +248,26 @@ int main (int argc, char *argv[]) {
                     char sendbuff[768];
                     strcpy(sendbuff, RESPONSE_HEADER);
                     strcat(sendbuff, buf);
-                    send(events[i].data.fd, buf, count, 0);
-                    // char* path = find_request_path(buf);
+                    char* path = find_request_path(buf);
                     // printf("'%s'\n", path);
+
+                    FILE* fp;
+                    char buff[512];
+                    char filepath[512];
+                    strcpy(filepath, INDEX_DIR);
+                    printf("Filename: %s\n", filepath);
+                    strcat(filepath, path);
+                    printf("Filename: %s\n", filepath);
+                    fp = fopen(filepath, "r"); // read mode
+
+                    if( fp == NULL ) {
+                        perror("Error 404.\n Requested file not found.\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    write(events[i].data.fd, RESPONSE_HEADER, strlen(RESPONSE_HEADER));
+                    while( fgets ( buff, 512, fp ) != NULL )
+                         write(events[i].data.fd, buff, strlen(buff)) ;
+
                     close(events[i].data.fd);
                     break;
                     if (s == -1) {
