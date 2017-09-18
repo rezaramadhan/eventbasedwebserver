@@ -25,21 +25,21 @@ Data detail untuk setiap eksperimen yang dilakukan dapat dilihat pada direktori 
 #### 500B file
 Parameters            | nginx         | apache2
 --------------------- |:-------------:| :-------:
-req/sec               |               |
-failed request        |               |
-connection time: max  |               |
-connection time: min  |               |
-connection time: avg  |               |
+req/sec               | 621.82              | 834,347
+failed request        | 18228              | 133
+connection time: max  | 35414.667 ms              | 45732 ms
+connection time: min  | 1 ms              | 1.333 ms
+connection time: avg  | 959,333 ms              | 2345.333 ms
 max memory usage      | 126MB              | 174MB
 
 #### 20KB file
 Parameters            | nginx         | apache2
 --------------------- |:-------------:| :-------:
-req/sec               |               |
-failed request        |               |
-connection time: max  |               |
-connection time: min  |               |
-connection time: avg  |               |
+req/sec               | 505.833              | 444.743
+failed request        | 18836              | 1054
+connection time: max  | 37125 ms              | 68527 ms
+connection time: min  | 1 ms              | 1.667 ms
+connection time: avg  | 1402.667 ms              | 868.333 ms
 max memory usage      | 135MB               | 205MB
 
 ## Event-based Webserver Implementation
