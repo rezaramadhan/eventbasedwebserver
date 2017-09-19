@@ -44,6 +44,7 @@ max memory usage      | 135MB               | 205MB
 
 ## Event-based Webserver Implementation
 ### How to Install
+Untuk melakukan instalasi implementasi server, jalankan makefile dengan menjalankan perintah 'make' di terminal pada direktori server. Lalu, jalankan perintah './server' di terminal untuk menjalankan implementasi server.
 ### Configuration Used
+Konfigurasi yang digunakan adalah port 8080 dan direktori file yang diakses yaitu 'resources/files/'.
 ### Experiment: 10K problem
-### Analysis
