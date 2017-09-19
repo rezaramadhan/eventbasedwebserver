@@ -237,7 +237,7 @@ int main (int argc, char *argv[]) {
     load_configuration("resources/server.conf");
     printf("%s\n", INDEX_DIR);
     sockfd = create_and_bind (PORT);
-    // sockfd = create_and_bind (argv[1]);
+
     if (sockfd == -1)
         abort ();
 
